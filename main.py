@@ -76,7 +76,8 @@ class MergeExcelApp:
             # 读取第一个文件以获取列信息
             first_df = pd.read_excel(
                 self.selected_files[0],
-                header=0 if has_header else None
+                header=0 if has_header else None,
+                names=None if has_header else ['']*pd.read_excel(self.selected_files[0], nrows=1).shape[1]  # 如果没有表头，使用空字符串作为列名
             )
             
             # 合并所有文件
@@ -84,7 +85,8 @@ class MergeExcelApp:
             for file in self.selected_files:
                 df = pd.read_excel(
                     file,
-                    header=0 if has_header else None
+                    header=0 if has_header else None,
+                    names=None if has_header else ['']*pd.read_excel(file, nrows=1).shape[1]  # 如果没有表头，使用空字符串作为列名
                 )
                 
                 if has_header:
@@ -137,8 +139,8 @@ class MergeExcelApp:
                 # 更新UI
                 self.root.update()
                 
-                # 保存文件
-                merged_df.to_excel(save_path, index=False)
+                # 保存文件，如果没有表头则不写入列名
+                merged_df.to_excel(save_path, index=False, header=has_header)
                 
                 # 关闭进度窗口
                 progress_window.destroy()
